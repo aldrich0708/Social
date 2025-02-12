@@ -1,0 +1,58 @@
+﻿@page "/messages/details"
+@using Microsoft.EntityFrameworkCore
+@using Social.Domain
+@inject IDbContextFactory<Social.Data.SocialContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h2>Message</h2>
+    <hr />
+    @if (message is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">Content</dt>
+            <dd class="col-sm-10">@message.Content</dd>
+            <dt class="col-sm-2">SenderId</dt>
+            <dd class="col-sm-10">@message.SenderId</dd>
+            <dt class="col-sm-2">GroupId</dt>
+            <dd class="col-sm-10">@message.GroupId</dd>
+            <dt class="col-sm-2">DateCreated</dt>
+            <dd class="col-sm-10">@message.DateCreated</dd>
+            <dt class="col-sm-2">DateUpdated</dt>
+            <dd class="col-sm-10">@message.DateUpdated</dd>
+            <dt class="col-sm-2">CreatedBy</dt>
+            <dd class="col-sm-10">@message.CreatedBy</dd>
+            <dt class="col-sm-2">UpdatedBy</dt>
+            <dd class="col-sm-10">@message.UpdatedBy</dd>
+        </dl>
+        <div>
+            <a href="@($"/messages/edit?id={message.Id}")">Edit</a> |
+            <a href="@($"/messages")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    private Message? message;
+
+    [SupplyParameterFromQuery]
+    private int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        message = await context.Message.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (message is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

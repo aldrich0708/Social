@@ -1,0 +1,40 @@
+﻿@page "/groups"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using Social.Domain
+@using Social.Data
+@implements IAsyncDisposable
+@inject IDbContextFactory<Social.Data.SocialContext> DbFactory
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="groups/create">Create New</a>
+</p>
+
+<QuickGrid Class="table" Items="context.Group">
+    <PropertyColumn Property="group => group.Name" />
+    <PropertyColumn Property="group => group.DateCreated" />
+    <PropertyColumn Property="group => group.DateUpdated" />
+    <PropertyColumn Property="group => group.CreatedBy" />
+    <PropertyColumn Property="group => group.UpdatedBy" />
+
+    <TemplateColumn Context="group">
+        <a href="@($"groups/edit?id={group.Id}")">Edit</a> |
+        <a href="@($"groups/details?id={group.Id}")">Details</a> |
+        <a href="@($"groups/delete?id={group.Id}")">Delete</a>
+    </TemplateColumn>
+</QuickGrid>
+
+@code {
+    private SocialContext context = default!;
+
+    protected override void OnInitialized()
+    {
+        context = DbFactory.CreateDbContext();
+    }
+
+    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+}
