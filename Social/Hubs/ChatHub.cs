@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+
+using System.Threading.Tasks;
+
 namespace Social.Hubs
 {
     public class ChatHub : Hub

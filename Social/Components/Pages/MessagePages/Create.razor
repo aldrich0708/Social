@@ -1,8 +1,12 @@
 ﻿@page "/messages/create"
+@using Microsoft.AspNetCore.SignalR
+@using Microsoft.AspNetCore.SignalR.Client
 @using Microsoft.EntityFrameworkCore
+@using Social.Data
 @using Social.Domain
 @inject IDbContextFactory<Social.Data.SocialContext> DbFactory
 @inject NavigationManager NavigationManager
+@inject Microsoft.AspNetCore.SignalR.IHubContext<Social.Hubs.ChatHub> ChatHubContext
 
 <PageTitle>Create</PageTitle>
 
@@ -62,13 +66,44 @@
 @code {
     [SupplyParameterFromForm]
     private Message Message { get; set; } = new();
+    private HubConnection? HubConnection;
+    private List<string> Messages = new List<string>();
 
     // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+
     private async Task AddMessage()
     {
         using var context = DbFactory.CreateDbContext();
         context.Message.Add(Message);
         await context.SaveChangesAsync();
+
+        // Notify clients of a new message
+        await ChatHubContext.Clients.All.SendAsync("ReceiveMessage", Message.SenderId, Message.Content);
+
         NavigationManager.NavigateTo("/messages");
     }
+
+    protected override async Task OnInitializedAsync()
+    {
+        HubConnection = new HubConnectionBuilder()
+            .WithUrl(NavigationManager.BaseUri + "chathub")
+            .Build();
+
+        HubConnection.On<string, string>("ReceiveMessage", (user, message) =>
+        {
+            Messages.Add($"{user}: {message}");
+            StateHasChanged(); // Forces UI to update
+        });
+
+        await HubConnection.StartAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (HubConnection is not null)
+        {
+            await HubConnection.DisposeAsync();
+        }
+    }
+
 }

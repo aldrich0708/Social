@@ -49,3 +49,70 @@ h1:focus {
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
 }
+
+
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    max-width: 600px;
+    margin: auto;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 10px;
+    background: #f9f9f9;
+}
+
+.chat-messages {
+    max-height: 400px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+
+.chat-message {
+    max-width: 80%;
+    padding: 8px;
+    border-radius: 5px;
+    margin: 5px 0;
+    word-wrap: break-word;
+}
+
+.my-message {
+    align-self: flex-end;
+    background-color: #007bff;
+    color: white;
+    text-align: right;
+}
+
+.other-message {
+    align-self: flex-start;
+    background-color: #e0e0e0;
+    color: black;
+}
+
+.sender {
+    font-weight: bold;
+}
+
+.timestamp {
+    font-size: 0.8rem;
+    opacity: 0.7;
+    text-align: right;
+}
+
+.chat-input {
+    display: flex;
+    margin-top: 10px;
+}
+
+    .chat-input input {
+        flex-grow: 1;
+        padding: 8px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+
+    .chat-input button {
+        margin-left: 5px;
+    }
